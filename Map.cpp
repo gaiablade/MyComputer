@@ -117,7 +117,7 @@ int Map::getTileHeight() {
 bool Map::collides(sf::FloatRect rect) {
     sf::Vector2f rect_position = sf::Vector2f(rect.left, rect.top);
     float h_width = (float)rect.width / 2, h_height = (float)rect.height / 2;
-    // Check each side:
+
     sf::Vector2f sides[] = {
         sf::Vector2f(rect_position.x - h_width, rect_position.y),
         sf::Vector2f(rect_position.x + h_width, rect_position.y),
@@ -125,8 +125,8 @@ bool Map::collides(sf::FloatRect rect) {
         sf::Vector2f(rect_position.x, rect_position.y + h_height)
     };
     for (int i = 0; i < 4; i++) {
-        sf::Vector2i tile = sf::Vector2i(sides[i].x / tile_width, sides[i].y / tile_width);
-        if (tile.x < 0 || tile.x > map_width || tile.y < 0 || tile.y >= map_height || tile_types[map[tile.y][tile.x]].solid)
+        sf::Vector2i tile = sf::Vector2i(sides[i].x / tile_width, sides[i].y / tile_height);
+        if (tile.x < 0 || tile.x >= map_width || tile.y < 0 || tile.y >= map_height || tile_types[map[tile.y][tile.x]].solid)
         {
             return true;
         }

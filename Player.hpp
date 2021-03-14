@@ -22,7 +22,7 @@ public:
 
     sf::Sprite& getSprite();
 
-    [[nodiscard]] sf::Vector2f updateMovement(std::unordered_map<sf::Keyboard::Key, int>& keys, double dt);
+    [[nodiscard]] sf::Vector2f updateMovement(std::unordered_map<sf::Keyboard::Key, int>& keys, double dt, float velocity_offset = 0);
 
     void move(sf::Vector2f movement);
 
@@ -30,7 +30,6 @@ public:
 private:
     float player_width = 32, player_height = 32;
     float movement_speed = 120;
-    //sf::RectangleShape player_sprite = sf::RectangleShape(sf::Vector2f(player_width, player_height));
     sf::Texture player_texture;
     sf::Sprite player_sprite;
     sf::Vector2f position;

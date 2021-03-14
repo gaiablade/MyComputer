@@ -22,17 +22,18 @@ sf::Sprite& Player::getSprite() {
     return player_sprite;
 }
 
-sf::Vector2f Player::updateMovement(std::unordered_map<sf::Keyboard::Key, int>& keys, double dt) {
+sf::Vector2f Player::updateMovement(std::unordered_map<sf::Keyboard::Key, int>& keys, double dt, float velocity_offset) {
+    // movement_speed = 120, velocity_offset = 0.0, -2.0, -4.0, -6.0, ...
     sf::Vector2f movement = sf::Vector2f(0, 0);
     if (keys[sf::Keyboard::Up]) {
-        movement.y -= dt * movement_speed;
+        movement.y -= dt * (movement_speed + velocity_offset);
     } else if (keys[sf::Keyboard::Down]) {
-        movement.y += dt * movement_speed;
+        movement.y += dt * (movement_speed + velocity_offset);
     }
     if (keys[sf::Keyboard::Left]) {
-        movement.x -= dt * movement_speed;
+        movement.x -= dt * (movement_speed + velocity_offset);
     } else if (keys[sf::Keyboard::Right]) {
-        movement.x += dt * movement_speed;
+        movement.x += dt * (movement_speed + velocity_offset);
     }
     return movement;
 }
@@ -50,12 +51,12 @@ void Player::move(sf::Vector2f movement) {
     }
 
     // Update texture rectangle:
-    player_sprite.setTextureRect(sf::IntRect((animation_frame % 4) * 32, (animation_frame / 4) * 32, 32, 32));
+    //player_sprite.setTextureRect(sf::IntRect((animation_frame % 4) * 32, (animation_frame / 4) * 32, 32, 32));
 
     position += movement;
     player_sprite.setPosition(position);
 }
 
 sf::FloatRect Player::getCollisionBox(sf::Vector2f offset) {
-    return sf::FloatRect(position.x + offset.x, position.y + offset.y, player_width, player_height);
+    return sf::FloatRect(position + offset, sf::Vector2f(player_width, player_height));
 }

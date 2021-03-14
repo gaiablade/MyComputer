@@ -58,7 +58,6 @@ int main() {
     fs::path current_directory = fs::current_path();
 
     sf::Text text = sf::Text(current_directory.relative_path().string(), font);
-    //text.setColor(sf::Color::White);
     text.setFillColor(sf::Color::White);
 
     sf::Clock clock;
@@ -79,21 +78,32 @@ int main() {
         updateInput(keys);
         auto movement = player.updateMovement(keys, dt);
 
+        auto movementX = sf::Vector2f(movement.x, 0);
+        auto movementY = sf::Vector2f(0, movement.y);
+
         // Check collisions and move:
         {
-            if (!map.collides(player.getCollisionBox(sf::Vector2f(movement.x, 0)))) {
-                player.move(sf::Vector2f(movement.x, 0));
+            float velocity_offset = -2.0;
+            while (map.collides(player.getCollisionBox(movementX)) && movementX != sf::Vector2f(0, 0)) {
+                movementX = sf::Vector2f(player.updateMovement(keys, dt, velocity_offset).x, 0);
+                velocity_offset -= 2.0;
             }
-            if (!map.collides(player.getCollisionBox(sf::Vector2f(0, movement.y)))) {
-                player.move(sf::Vector2f(0, movement.y));
+            player.move(movementX);
+        }
+        {
+            float velocity_offset = -2.0;
+            while (map.collides(player.getCollisionBox(movementY)) && movementY != sf::Vector2f(0, 0)) {
+                movementY = sf::Vector2f(0, player.updateMovement(keys, dt, velocity_offset).y);
+                velocity_offset -= 2.0;
             }
+            player.move(movementY);
         }
         
         // Update View:
         view.reset(sf::FloatRect(player.getPosition().x - 300, player.getPosition().y - 225, 600, 450));
         window.setView(view);
 
-        // Render:HRtP Shingyoku's Theme: The Positive and Negative
+        // Render:
         window.clear();
         window.draw(map.getSprite());
         window.draw(player.getSprite());
