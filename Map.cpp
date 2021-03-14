@@ -94,17 +94,6 @@ Map::~Map() {
     delete map_buffer;
 }
 
-vector<std::string> Map::regexSearch(const std::string& input, const std::string& pattern) {
-    vector<std::string> result;
-    std::regex r{pattern};
-    std::smatch s;
-    std::regex_match(input, s, r);
-    for (int i = 1; i < s.length(); i++) {
-        result.push_back(s[i].str());
-    }
-    return result;
-}
-
 sf::Sprite& Map::getSprite() {
     return map_sprite;
 }
@@ -137,8 +126,7 @@ bool Map::collides(sf::FloatRect rect) {
     };
     for (int i = 0; i < 4; i++) {
         sf::Vector2i tile = sf::Vector2i(sides[i].x / tile_width, sides[i].y / tile_width);
-        if (tile.x < 0 || tile.x > map_width || tile.y < 0 || tile.y >= map_height
-                       || tile_types[map[tile.y][tile.x]])
+        if (tile.x < 0 || tile.x > map_width || tile.y < 0 || tile.y >= map_height || tile_types[map[tile.y][tile.x]].solid)
         {
             return true;
         }

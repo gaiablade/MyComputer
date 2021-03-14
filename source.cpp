@@ -1,9 +1,12 @@
+#include <filesystem>
 #include <iostream>
 #include <unordered_map>
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include "Map.hpp"
 #include "Player.hpp"
+
+namespace fs = std::filesystem;
 
 void updateInput(std::unordered_map<sf::Keyboard::Key, int>& keys) {
     for (auto& [key, value] : keys) {
@@ -36,10 +39,10 @@ int main() {
 
     // Initialize Player:
     Player player = Player();
-    player.setPosition(sf::Vector2f(350, 100));
+    player.setPosition(sf::Vector2f(400, 100));
 
     // Initialize Map:
-    Map map{"Maps/map1.mf"};
+    Map map{"Maps/map2.mf"};
     
     // Set view:
     sf::View view;
@@ -48,6 +51,15 @@ int main() {
     std::unordered_map<sf::Keyboard::Key, int> keys{
         {sf::Keyboard::Up, 0}, {sf::Keyboard::Down, 0}, {sf::Keyboard::Right, 0}, {sf::Keyboard::Left, 0},
     };
+
+    sf::Font font;
+    font.loadFromFile("Fonts/VT323-Regular.ttf");
+
+    fs::path current_directory = fs::current_path();
+
+    sf::Text text = sf::Text(current_directory.relative_path().string(), font);
+    //text.setColor(sf::Color::White);
+    text.setFillColor(sf::Color::White);
 
     sf::Clock clock;
 
@@ -81,10 +93,14 @@ int main() {
         view.reset(sf::FloatRect(player.getPosition().x - 300, player.getPosition().y - 225, 600, 450));
         window.setView(view);
 
-        // Render:
+        // Render:HRtP Shingyoku's Theme: The Positive and Negative
         window.clear();
         window.draw(map.getSprite());
         window.draw(player.getSprite());
+
+        window.setView(sf::View());
+        window.draw(text);
+
         window.display();
     }
 }
