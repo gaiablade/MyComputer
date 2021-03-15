@@ -3,7 +3,6 @@
 #include <exception>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 #include <unordered_map>
 #include <vector>
 #include <fmt/core.h>
@@ -20,7 +19,7 @@ class Map {
 public:
     Map();
 
-    Map(vector<vector<int>>& map, const std::string& name = "");
+    Map(vector<vector<vector<int>>>& map, const std::string& name = "");
 
     Map(const std::string& filename);
 
@@ -43,7 +42,7 @@ public:
     bool collides(sf::FloatRect rect);
 
 private:
-    vector<vector<int>> map;
+    vector<vector<vector<int>>> layers;
     int map_width, map_height;
     int tile_width = 32, tile_height = 32;
     sf::Color c1 = sf::Color(0x000000FF);
@@ -56,10 +55,14 @@ private:
     sf::Sprite map_sprite{};
     std::string name;
     std::unordered_map<int, TileAttributes> tile_types{
+        {0, {.solid = false}},
         {1, {.solid = false}},
         {2, {.solid = true}},
-        {3, {.solid = false}},
+        {3, {.solid = true}},
         {4, {.solid = true}},
-        {5, {.solid = false}}
+        {5, {.solid = false}},
+        {6, {.solid = true}},
+        {7, {.solid = true}},
+        {8, {.solid = false}}
     };
 };

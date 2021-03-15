@@ -3,8 +3,8 @@
 Map::Map() {
 }
 
-Map::Map(vector<vector<int>>& map, const std::string& name) 
-    : map(map)
+Map::Map(vector<vector<vector<int>>>& map, const std::string& name) 
+    : layers(map)
     , map_width(map[0].size())
     , map_height(map.size())
     , name(name)
@@ -18,7 +18,7 @@ Map::Map(vector<vector<int>>& map, const std::string& name)
 
     for (int j = 0; j < map_height; j++) {
         for (int i = 0; i < map_width; i++) {
-            switch (map[j][i]) {
+            switch (map[0][j][i]) {
             case 0:
                 r2.setPosition(sf::Vector2f(i * tile_width, j * tile_height));
                 map_buffer->draw(r2);
@@ -46,28 +46,31 @@ Map::Map(const std::string& filename) {
         throw "Failed to open map file: " + filename;
     }
 
-    {
-        // Get width and height:
-        std::string line1;
-        getline(in, line1);
-        vector<std::string> v = regexSearch(line1, "([0-9]+), ?([0-9]+)");
-        map_width = std::atoi(v[0].c_str());
-        map_height = std::atoi(v[1].c_str());
-    }
+    while (!in.eof()) {
+        layers.push_back({});
+        {
+            // Get width and height:
+            std::string line1;
+            getline(in, line1);
+            if (line1.empty()) {layers.pop_back(); break;}
+            vector<std::string> v = regexSearch(line1, "([0-9]+), ?([0-9]+)");
+            map_width = std::atoi(v[0].c_str());
+            map_height = std::atoi(v[1].c_str());
+        }
 
-    {
-        // Populate map:
-        std::string read_in;
-        std::string pattern_single_number = "([0-9]+)[,]?";
-        std::string pattern;
-        for (int i = 0; i < map_width; i++) pattern.append(pattern_single_number);
-        for (int j = 0; j < map_height; j++) {
-            map.push_back(vector<int>{});
-            getline(in, read_in);
-            vector<std::string> row = regexSearch(read_in, pattern);
-
-            for (int i = 0; i <= map_width; i++) {
-                map[j].push_back(std::atoi(row[i].c_str()));
+        {
+            // Populate map:
+            std::string read_in;
+            std::string pattern_single_number = "([0-9]+)[,]?";
+            std::string pattern;
+            for (int i = 0; i < map_width; i++) pattern.append(pattern_single_number);
+            for (int j = 0; j < map_height; j++) {
+                layers.back().push_back({});
+                getline(in, read_in);
+                vector<std::string> row = regexSearch(read_in, pattern);
+                for (int i = 0; i <= map_width; i++) {
+                    layers.back().back().push_back(std::atoi(row[i].c_str()));
+                }
             }
         }
     }
@@ -75,7 +78,7 @@ Map::Map(const std::string& filename) {
     sf::Texture* texture = new sf::Texture();
     fs::path texture_file = map_file.replace_extension(".png");
     if (!texture->loadFromFile(texture_file.string())) {
-        std::cout << format("Failed to load texture file {}\n", texture_file.string());
+        fmt::print("Failed to load texture file: {}\n", texture_file.string());
         exit(1);
     }
     sf::Sprite sprite = sf::Sprite(*texture);
@@ -124,11 +127,13 @@ bool Map::collides(sf::FloatRect rect) {
         sf::Vector2f(rect_position.x, rect_position.y - h_height),
         sf::Vector2f(rect_position.x, rect_position.y + h_height)
     };
-    for (int i = 0; i < 4; i++) {
-        sf::Vector2i tile = sf::Vector2i(sides[i].x / tile_width, sides[i].y / tile_height);
-        if (tile.x < 0 || tile.x >= map_width || tile.y < 0 || tile.y >= map_height || tile_types[map[tile.y][tile.x]].solid)
-        {
-            return true;
+    for (auto& layer: layers) {
+        for (int i = 0; i < 4; i++) {
+            sf::Vector2i tile = sf::Vector2i(sides[i].x / tile_width, sides[i].y / tile_height);
+            if (tile.x < 0 || tile.x >= map_width || tile.y < 0 || tile.y >= map_height || tile_types[layer[tile.y][tile.x]].solid)
+            {
+                return true;
+            }
         }
     }
     return false;
