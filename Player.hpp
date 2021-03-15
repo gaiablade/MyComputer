@@ -28,12 +28,13 @@ public:
 
     sf::FloatRect getCollisionBox(sf::Vector2f offset = sf::Vector2f(0, 0));
 private:
-    float player_width = 32, player_height = 32;
+    float player_width = 31, player_height = 31;
     float movement_speed = 120;
     sf::Texture player_texture;
     sf::Sprite player_sprite;
     sf::Vector2f position;
     Direction facing_direction = Direction::Down;
-    const std::string character_texture_file = "Images/character1-Sheet.png";
+    //const std::string character_texture_file = "Images/character1-Sheet.png";
+    const std::string character_texture_file = "Images/Sprite-0003.png";
     int animation_frame = 0;
 };

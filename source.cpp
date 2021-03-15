@@ -100,7 +100,7 @@ int main() {
         }
         
         // Update View:
-        view.reset(sf::FloatRect(player.getPosition().x - 300, player.getPosition().y - 225, 600, 450));
+        view.reset(sf::FloatRect(player.getPosition().x - 300/2, player.getPosition().y - 225/2, 300, 225));
         window.setView(view);
 
         // Render:
