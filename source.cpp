@@ -19,7 +19,8 @@ void updateInput(std::unordered_map<sf::Keyboard::Key, int>& keys) {
 }
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "MyComputer");
+    sf::Vector2i windowSize{1000, 750};
+    sf::RenderWindow window(sf::VideoMode(windowSize.x, windowSize.y), "MyComputer");
     window.setFramerateLimit(60);
 
     // Game stuff:
@@ -39,7 +40,7 @@ int main() {
 
     // Initialize Player:
     Player player = Player();
-    player.setPosition(sf::Vector2f(400, 100));
+    player.setPosition(sf::Vector2f(400, 500));
 
     // Initialize Map:
     Map map{"Maps/map2.mf"};
@@ -81,26 +82,57 @@ int main() {
         auto movementX = sf::Vector2f(movement.x, 0);
         auto movementY = sf::Vector2f(0, movement.y);
 
+        sf::Vector2f movement_offsets_X[] = {
+            sf::Vector2f(0, -1),
+            sf::Vector2f(0, -2),
+            sf::Vector2f(0, -3),
+            sf::Vector2f(0, -4),
+            sf::Vector2f(0, 1),
+            sf::Vector2f(0, 2),
+            sf::Vector2f(0, 3),
+            sf::Vector2f(0, 4),
+        };
+
+        sf::Vector2f movement_offsets_Y[] = {
+            sf::Vector2f(-1, 0),
+            sf::Vector2f(1, 0),
+        };
+
         // Check collisions and move:
         {
-            float velocity_offset = -2.0;
+            float velocity_offset = -1.0;
             while (map.collides(player.getCollisionBox(movementX)) && movementX != sf::Vector2f(0, 0)) {
                 movementX = sf::Vector2f(player.updateMovement(keys, dt, velocity_offset).x, 0);
-                velocity_offset -= 2.0;
+                velocity_offset -= 1.0;
             }
             player.move(movementX);
         }
         {
-            float velocity_offset = -2.0;
+            float velocity_offset = -1.0;
             while (map.collides(player.getCollisionBox(movementY)) && movementY != sf::Vector2f(0, 0)) {
                 movementY = sf::Vector2f(0, player.updateMovement(keys, dt, velocity_offset).y);
-                velocity_offset -= 2.0;
+                velocity_offset -= 1.0;
             }
             player.move(movementY);
         }
         
         // Update View:
-        view.reset(sf::FloatRect(player.getPosition().x - 300/2, player.getPosition().y - 225/2, 300, 225));
+        const float cameraWidth = 600, cameraHeight = cameraWidth / 1.3333333333;
+        auto pos = player.getPosition();
+        float cameraX = pos.x - cameraWidth/2, cameraY = pos.y - cameraHeight/2;
+        if (cameraX + cameraWidth > map.getWidth() * map.getTileWidth()) {
+            cameraX = map.getWidth() * map.getTileWidth() - cameraWidth;
+        } if (cameraX < 0) {
+            cameraX = 0;
+        }
+        if (cameraY + cameraHeight > map.getHeight() * map.getTileHeight()) {
+            cameraY = map.getHeight() * map.getTileHeight() - cameraHeight;
+        } if (cameraY < 0) {
+            cameraY = 0;
+        }
+
+        //view.reset(sf::FloatRect(player.getPosition().x - 600/2, player.getPosition().y - 450/2, 600, 450));
+        view.reset(sf::FloatRect(cameraX, cameraY, cameraWidth, cameraHeight));
         window.setView(view);
 
         // Render:
