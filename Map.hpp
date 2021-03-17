@@ -63,6 +63,7 @@ private:
         {5, {.solid = false}},
         {6, {.solid = true}},
         {7, {.solid = true}},
-        {8, {.solid = false}}
+        {8, {.solid = false}},
+        {16, {.solid = false}}
     };
 };
