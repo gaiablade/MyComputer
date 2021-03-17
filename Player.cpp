@@ -6,7 +6,6 @@ Player::Player() {
     player_sprite.setTextureRect(sf::IntRect(0, 0, 32, 32));
     player_sprite.setOrigin(sf::Vector2f(player_width/2, player_height/2));
     player_sprite.setPosition(sf::Vector2f(100 + player_width/2, 50 + player_height/2));
-    //player_sprite.setFillColor(sf::Color(0x0000FFFF));
 }
 
 sf::Vector2f Player::getPosition() {
@@ -49,9 +48,6 @@ void Player::move(sf::Vector2f movement) {
     } else {
         animation_frame = 4 * int(facing_direction);
     }
-
-    // Update texture rectangle:
-    //player_sprite.setTextureRect(sf::IntRect((animation_frame % 4) * 32, (animation_frame / 4) * 32, 32, 32));
 
     position += movement;
     player_sprite.setPosition(position);

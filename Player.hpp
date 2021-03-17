@@ -28,7 +28,7 @@ public:
 
     sf::FloatRect getCollisionBox(sf::Vector2f offset = sf::Vector2f(0, 0));
 private:
-    float player_width = 31, player_height = 31;
+    float player_width = 31.5, player_height = 31.5;
     float movement_speed = 120;
     sf::Texture player_texture;
     sf::Sprite player_sprite;
